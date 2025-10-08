@@ -14,27 +14,15 @@ class Frontend {
    }
 
    public function directorist_listings_query_results( $arg ){
-    if ( ! empty( $arg->ids ) ) {
-        foreach ( $arg->ids as $post_id ) {
-            if ( $post_id == '99962' ) {
-                // code...
-            
-                echo "<h3>Post ID: $post_id</h3>";
-                
-                // Get all post meta
-                $all_meta = get_post_meta( $post_id );
+        // Remove ID 99962
+        $arg->ids = array_values( array_filter( $arg->ids, function( $id ) {
+            return $id != 99962;
+        }) );
 
-                echo '<pre>';
-                print_r( $all_meta );
-                echo '</pre>';
-            }
-        }
-    } else {
-        echo 'No listings found.';
+        // Update total count
+        $arg->total = count( $arg->ids );
+        return $arg;
     }
-
-    return $arg;
-}
 
 
 
