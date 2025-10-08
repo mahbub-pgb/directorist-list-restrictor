@@ -7,78 +7,52 @@ class Frontend {
 
     public function init() {
         // add_action( 'wp_head', [$this, 'head'] );
-       // add_action( 'directorist_before_listing_types', [$this, 'before_listing_types'] );
 
-       add_action( 'directorist_all_listings_query_arguments', [$this, 'listings_query_arguments'], 10, 2 );
-       // add_filter( 'atbdp_listing_search_query_argument', [$this, 'restrict_directorist_all_listings'] );
+        add_filter( 'directorist_listings_query_results', [$this, 'directorist_listings_query_results'], );
 
-       add_filter( 'atbdp_search_listings_meta_queries', [$this, 'listings_meta_queries'] );
+       
    }
+
+   public function directorist_listings_query_results( $arg ){
+    if ( ! empty( $arg->ids ) ) {
+        foreach ( $arg->ids as $post_id ) {
+            if ( $post_id == '99962' ) {
+                // code...
+            
+                echo "<h3>Post ID: $post_id</h3>";
+                
+                // Get all post meta
+                $all_meta = get_post_meta( $post_id );
+
+                echo '<pre>';
+                print_r( $all_meta );
+                echo '</pre>';
+            }
+        }
+    } else {
+        echo 'No listings found.';
+    }
+
+    return $arg;
+}
+
+
+
 
    public function head(){
-    $listings = new \Directorist\Directorist_Listings( $atts = [], $type = 'instant_search' );
-    $ids = $listings->query_results->ids;
+    $post_id = 123; // Replace with your post ID
+    $post_type = get_post_type( $post_id );
 
-    // Remove both IDs
-    $ids = array_filter($ids, function($id) {
-        return !in_array($id, [ 99962]);
-    });
+    echo 'Post type of ID ' . $post_id . ' is: ' . $post_type;
 
-    // Reindex array if needed
-    $ids = array_values($ids);
 
-     Helper::pri( $ids );
+
+     Helper::pri( $post_type );
    }
 
-    public function restrict_directorist_all_listings( $arg ){
+    
 
-        $ids = $arg->query_results->ids;
-
-        // Remove both IDs
-         $ids = array_filter($ids, function($id) {
-            return !in_array($id, [ 99962]);
-        });
-
-        // Reindex array if needed
-        $ids = array_values($ids);
-
-        // Helper::pri( $arg );
-        return $arg;
-    }
-
-    public function listings_meta_queries( $arg ){
-
-        // update_option( 'arg', $arg );
-
-        // Helper::pri( $arg );
-        return $arg;
-    }
-
-
-    public function listings_query_arguments( $arg, $list ){
-
-        update_option( 'arg', $arg );
-
-        Helper::pri( $list );
-        return $arg;
-    }
-
-    public function before_listing_types( $arg ) {
-
-        $ids = $arg->all_listings->ids;
-
-        // Remove both IDs
-         $ids = array_filter($ids, function($id) {
-            return !in_array($id, [ 99962]);
-        });
-
-        // Reindex array if needed
-        $ids = array_values($ids);
-
-        Helper::pri( $ids );
-
-
-    }
+   
 
     
 }
