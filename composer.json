@@ -1,0 +1,11 @@
+{
+  "name": "mahbub/list-restrictor",
+  "description": "A plugin to restrict lists with separate admin and frontend logic.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "ListRestrictor\\": "includes/"
+    }
+  }
+}
