@@ -40,6 +40,7 @@ class Frontend {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('list_restrictor_nonce'),
             'is_login' => is_user_logged_in(),
+            'login_url' => wp_login_url(),
         ]);
     }
 
