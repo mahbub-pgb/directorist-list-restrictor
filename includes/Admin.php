@@ -4,47 +4,115 @@ namespace ListRestrictor;
 class Admin {
     use Hookable;
 
+    /**
+     * Initialize hooks
+     */
     public function init() {
         $this->add_actions([
-            'save_post_at_biz_dir' => ['change_post_type', 20, 4],
+            // Hook to save_post for custom post type 'at_biz_dir'
+            'save_post_at_biz_dir' => ['change_post_type', 20, 3], // Note: 3 args for save_post
         ]);
     }
 
+    /**
+     * Change directory type and optionally update term relationship
+     *
+     * @param int     $post_id Post ID
+     * @param WP_Post $post    Post object
+     * @param bool    $update  Whether this is an update
+     */
     public function change_post_type( $post_id, $post, $update ) {
-        // Prevent infinite loops and unnecessary runs
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-            return;
-        }
+        // Prevent autosave loops
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 
-        // Check user permissions
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return;
-        }
+        // Check permissions
+        if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-        // Only target specific post types
-        if ( get_post_type( $post_id ) !== 'at_biz_dir' ) {
-            return;
-        }
+        // Only for 'at_biz_dir' post type
+        if ( get_post_type( $post_id ) !== 'at_biz_dir' ) return;
 
-        // Get all post meta
-        $all_meta = get_post_meta( $post_id );
-
-        // Safely read the meta value
+        // Get meta value safely
+        $all_meta     = get_post_meta( $post_id );
         $select_value = isset( $all_meta['_custom-select-2'][0] ) ? $all_meta['_custom-select-2'][0] : '';
 
-        // Update directory type based on the value
-        if ( $select_value === 'disable' ) {
-            update_post_meta( $post_id, '_directory_type', '58' );
-            // wp_set_post_terms( $post_id, [ 76 ], 'at_biz_dir-category' );
-        } elseif ( $select_value === 'enable' ) {
-            update_post_meta( $post_id, '_directory_type', '57' );
-        } elseif ( $select_value === 'sold' ) {
-            update_post_meta( $post_id, '_directory_type', '59' );
+        // Directory type / term_taxonomy mapping
+        $terms = [
+            'disable' => 58,
+            'enable'  => 57,
+            'sold'    => 59,
+        ];
+
+        if ( isset( $terms[ $select_value ] ) ) {
+            $term_id = intval( $terms[ $select_value ] );
+            update_post_meta( $post_id, '_directory_type', $term_id );
+            $this->update_post_term_taxonomy( $post_id, $term_id );
         }
     }
 
 
-    
+    /**
+     * Update a post's term_taxonomy_id in wp_term_relationships
+     *
+     * @param int $post_id               Post ID
+     * @param int $new_term_taxonomy_id  New term_taxonomy_id
+     * @return int|false Number of rows affected or false
+     */
+    private function update_post_term_taxonomy( $post_id, $new_term_taxonomy_id ) {
+        global $wpdb;
 
-    
+        $post_id = intval( $post_id );
+        $new_term_taxonomy_id = intval( $new_term_taxonomy_id );
+
+        if ( ! $post_id || ! $new_term_taxonomy_id ) {
+            return false;
+        }
+
+        // Check if a relationship exists
+        $existing = $wpdb->get_var( $wpdb->prepare(
+            "SELECT object_id FROM {$wpdb->term_relationships} WHERE object_id = %d",
+            $post_id
+        ) );
+
+        if ( $existing ) {
+            // Update existing term_taxonomy_id
+            $updated = $wpdb->update(
+                $wpdb->term_relationships,
+                ['term_taxonomy_id' => $new_term_taxonomy_id],
+                ['object_id' => $post_id],
+                ['%d'],
+                ['%d']
+            );
+        } else {
+            // Insert new relationship if none exists
+            $updated = $wpdb->insert(
+                $wpdb->term_relationships,
+                [
+                    'object_id'        => $post_id,
+                    'term_taxonomy_id' => $new_term_taxonomy_id,
+                    'term_order'       => 0,
+                ],
+                ['%d','%d','%d']
+            );
+        }
+
+        // Clear caches
+        clean_object_term_cache( $post_id, $this->get_taxonomy_by_term_taxonomy_id( $new_term_taxonomy_id ) );
+
+        return $updated;
+    }
+
+    /**
+     * Helper: Get taxonomy by term_taxonomy_id
+     *
+     * @param int $term_taxonomy_id
+     * @return string|null Taxonomy slug or null
+     */
+    private function get_taxonomy_by_term_taxonomy_id( $term_taxonomy_id ) {
+        global $wpdb;
+
+        return $wpdb->get_var( $wpdb->prepare(
+            "SELECT taxonomy FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id = %d",
+            intval( $term_taxonomy_id )
+        ) );
+    }
 }
