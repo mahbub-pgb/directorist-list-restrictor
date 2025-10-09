@@ -40,7 +40,7 @@ jQuery(document).ready(function($) {
                 data_id: id
             },
             success: function(response) {
-                console.log('AJAX Response:', response);
+                // console.log('AJAX Response:', response);
 
                 const $listingsContainer = $('.directorist-archive-contents__listings');
                 const allArticles = $('article.directorist-listing-single');
