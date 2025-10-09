@@ -39,9 +39,9 @@ class Helper {
      * Works only for admin users to avoid leaking info to visitors.
      */
     public static function pri( $data, $exit = false ) {
-        // if ( ! self::is_admin_user() ) {
-        //     return;
-        // }
+        if ( ! self::is_admin_user() ) {
+            return;
+        }
 
         echo '<pre style="background:#1e1e1e;color:#dcdcdc;padding:10px;border-radius:8px;">';
         print_r( $data );

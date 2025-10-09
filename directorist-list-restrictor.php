@@ -8,10 +8,18 @@
  * Author Email: mahbub.progressivebyte@gmail.com
  */
 
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+if ( ! defined( 'LIST_RESTRICTOR_URL' ) ) {
+    define( 'LIST_RESTRICTOR_URL', plugin_dir_url( __FILE__ ) );
+}
+
+if ( ! defined( 'LIST_RESTRICTOR_PATH' ) ) {
+    define( 'LIST_RESTRICTOR_PATH', plugin_dir_path( __FILE__ ) );
+}
+
 
 // Load Composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
@@ -25,3 +33,18 @@ function list_restrictor_init() {
     $loader->init();
 }
 add_action( 'plugins_loaded', 'list_restrictor_init' );
+
+// Register deactivation hook
+register_deactivation_hook( __FILE__, 'list_restrictor_deactivate' );
+
+/**
+ * Runs when plugin is deactivated
+ */
+function list_restrictor_deactivate() {
+    // Example: Unschedule cron job if you have one
+    $timestamp = wp_next_scheduled( 'check_expired_dates_daily' );
+    if ( $timestamp ) {
+        wp_unschedule_event( $timestamp, 'check_expired_dates_daily' );
+    }
+
+}

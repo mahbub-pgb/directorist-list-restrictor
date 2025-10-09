@@ -8,7 +8,10 @@ class Loader {
             $this->admin();
         } else {
             $this->frontend();
+
         }
+        $this->common();
+        $this->ajax();
     }
 
     private function admin() {
@@ -19,5 +22,15 @@ class Loader {
     private function frontend() {
         $frontend = new Frontend();
         $frontend->init();
+    }
+
+    private function common() {
+        $common = new Common();
+        $common->init();
+    }
+
+    private function ajax() {
+        $ajax = new Ajax();
+        $ajax->init();
     }
 }

@@ -9,12 +9,12 @@ class Admin {
      */
     public function init() {
         $this->add_actions([
-            // Hook to save_post for custom post type 'at_biz_dir'
-            'save_post_at_biz_dir' => ['change_post_type', 20, 3], // Note: 3 args for save_post
+            'save_post_at_biz_dir' => ['change_post_type', 20, 3], 
+            'wp_enqueue_scripts' => 'list_restrictor_enqueue_scripts', 
         ]);
-    }
 
-    /**
+    }
+     /**
      * Change directory type and optionally update term relationship
      *
      * @param int     $post_id Post ID
