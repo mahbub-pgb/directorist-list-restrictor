@@ -1,14 +1,12 @@
 jQuery(document).ready(function($) {
-    // Check login status from localized script
-    var isLoggedIn = RESTRICT_LIST.is_login;
+    const id = 57; // listing type id
 
-    var id = 57;
-
-    // Use delegated event binding for dynamically added links
     $(document).on('click', `a[data-listing_type_id="${id}"]`, function(e) {
-        if (!isLoggedIn) {
-            e.preventDefault(); // Stop the default link behavior
+        if (!RESTRICT_LIST.is_login) {
+            e.preventDefault();
             alert('Please login to access this listing type!');
+            showLoader();
+
             $.ajax({
                 url: RESTRICT_LIST.ajax_url,
                 type: 'POST',
@@ -16,35 +14,43 @@ jQuery(document).ready(function($) {
                 data: {
                     action: 'hide_listing',
                     nonce: RESTRICT_LIST.nonce,
-                    data_id: id,
-
+                    data_id: id
                 },
                 success: function(response) {
+                    console.log('AJAX Response:', response);
 
-                    console.log( response );
-                    // if(response.success && response.data.hide_listing_type_id == 57) {
-                    //     // Hide all links / listings with data-listing_type_id="57"
-                    //     $('a[data-listing_type_id="57"]').closest('.directorist-row').hide();
-                    // }
+                    // Example response.data = [99960, 99961, 99962]
+                    if (response.success && response.data && response.data.length > 0) {
+                        response.data.forEach(function(listingId) {
+                            // Find the button or element with this listing ID
+                            const targetArticle = $(`.directorist-mark-as-favorite__btn[data-listing_id="${listingId}"]`)
+                                .closest('article.directorist-listing-single');
+
+                            // Hide the entire listing card
+                            if (targetArticle.length) {
+                                targetArticle.fadeOut(400, function() {
+                                    $(this).remove(); // optional: remove from DOM after fade
+                                });
+                            }
+                        });
+                    }
+
+                    hideLoader();
                 },
                 error: function(xhr, status, error) {
+                    hideLoader();
                     console.log('AJAX error:', error);
                 }
             });
-            // Optional: redirect to login page
-            // window.location.href = '/wp-login.php';
         }
     });
 
-    // Function to create the loader if it doesn't exist
+    // ===== Loader helper functions =====
     function createLoader() {
         if ($('#loader-overlay').length === 0) {
-            // Create loader HTML
-            var loader = $('<div id="loader-overlay"><div class="loader"></div></div>');
+            const loader = $('<div id="loader-overlay"><div class="loader"></div></div>');
             $('body').append(loader);
-
-            // Add CSS dynamically
-            var css = `
+            const css = `
                 .loader {
                     border: 8px solid #f3f3f3;
                     border-top: 8px solid #3498db;
@@ -68,22 +74,17 @@ jQuery(document).ready(function($) {
                     justify-content: center;
                     align-items: center;
                     z-index: 9999;
-                }
-            `;
+                }`;
             $('<style>').prop('type', 'text/css').html(css).appendTo('head');
         }
     }
 
-    // Function to show the loader
     function showLoader() {
         createLoader();
         $('#loader-overlay').fadeIn(200);
     }
 
-    // Function to hide the loader
     function hideLoader() {
         $('#loader-overlay').fadeOut(200);
     }
-
-    showLoader();
 });

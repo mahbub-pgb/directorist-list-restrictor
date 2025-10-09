@@ -37,29 +37,29 @@ class Ajax {
      * @param string $post_type  Optional: restrict by post type
      * @return array             Array of post IDs
      */
-    function get_post_ids_by_meta( $meta_key, $meta_value = '_directory_type', $post_type = '' ) {
+    public function get_post_ids_by_meta( $meta_value = '', $meta_key = '_directory_type', $post_type = '' ) {
         global $wpdb;
 
-        // Prepare SQL query
-        $sql = "SELECT pm.post_id 
+        // Start base SQL
+        $sql = "SELECT pm.post_id
                 FROM {$wpdb->postmeta} pm
                 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
                 WHERE pm.meta_key = %s
-                AND pm.meta_value = %s";
+                AND pm.meta_value = %s
+                AND p.post_status = 'publish'";
 
-        $params = [$meta_key, $meta_value];
+        // Prepare params
+        $params = [ $meta_key, $meta_value ];
 
-        // Optional: filter by post type
-        if ( ! empty($post_type) ) {
+        // Optional post type filter
+        if ( ! empty( $post_type ) ) {
             $sql .= " AND p.post_type = %s";
             $params[] = $post_type;
         }
 
-        // Only published posts (optional)
-        $sql .= " AND p.post_status = 'publish'";
-
-        // Execute query
-        $post_ids = $wpdb->get_col( $wpdb->prepare( $sql, $params ) );
+        // Prepare & run query
+        $prepared = $wpdb->prepare( $sql, $params );
+        $post_ids = $wpdb->get_col( $prepared );
 
         return $post_ids;
     }
