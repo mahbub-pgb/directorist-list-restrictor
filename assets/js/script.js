@@ -89,7 +89,8 @@ jQuery(document).ready(function($) {
                     text-align: center;
                     font-size: 16px;
                 ">
-                    🔒 Please <a href="${loginUrl}" style="color: #0073aa; font-weight: bold;">log in</a> to see the pre-sale listings.
+                    🔒 Por favor, <a href="${loginUrl}" style="color: #0073aa; font-weight: bold;">inicie sesión</a> para ver los listados de preventa.
+
                 </div>
             `;
             $('.directorist-archive-contents__listings').before(notice);
