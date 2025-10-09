@@ -6,10 +6,8 @@ class Admin {
 
     public function init() {
         $this->add_actions([
-            'admin_menu' => 'add_admin_menu',
+            'save_post_at_biz_dir' => ['change_post_type', 20, 4],
         ]);
-
-        add_action( 'save_post_at_biz_dir', [ $this, 'change_post_type'] , 20, 3 );
     }
 
     public function change_post_type( $post_id, $post, $update ) {
@@ -37,26 +35,16 @@ class Admin {
         // Update directory type based on the value
         if ( $select_value === 'disable' ) {
             update_post_meta( $post_id, '_directory_type', '58' );
+            // wp_set_post_terms( $post_id, [ 76 ], 'at_biz_dir-category' );
         } elseif ( $select_value === 'enable' ) {
             update_post_meta( $post_id, '_directory_type', '57' );
+        } elseif ( $select_value === 'sold' ) {
+            update_post_meta( $post_id, '_directory_type', '59' );
         }
     }
 
 
-    public function add_admin_menu() {
-        add_menu_page(
-            __( 'List Restrictor', 'list-restrictor' ),
-            __( 'List Restrictor', 'list-restrictor' ),
-            'manage_options',
-            'list-restrictor',
-            [ $this, 'render_admin_page' ],
-            'dashicons-lock',
-            20
-        );
-    }
+    
 
-    public function render_admin_page() {
-        echo '<div class="wrap"><h1>' . Helper::esc( 'List Restrictor Admin' ) . '</h1>';
-        echo '<p>Settings for list restriction go here.</p></div>';
-    }
+    
 }
