@@ -24,7 +24,7 @@ if ( ! defined( 'LR_PRE_SALE_ID' ) ) {
     define( 'LR_PRE_SALE_ID', '58' );
 }
 
-if ( ! defined( 'LR_POST_SALE_ID' ) ) {
+if ( ! defined( 'LR_FOR_SALE_ID' ) ) {
     define( 'LR_FOR_SALE_ID', '57' );
 }
 
@@ -45,6 +45,13 @@ function list_restrictor_init() {
     $loader->init();
 }
 add_action( 'plugins_loaded', 'list_restrictor_init' );
+
+function schedule_daily_event() {
+    if ( ! wp_next_scheduled( 'check_expired_dates_daily' ) ) {
+        wp_schedule_event( time(), 'daily', 'check_expired_dates_daily' );
+    }
+}
+register_activation_hook( __FILE__, 'schedule_daily_event' );
 
 // Register deactivation hook
 register_deactivation_hook( __FILE__, 'list_restrictor_deactivate' );

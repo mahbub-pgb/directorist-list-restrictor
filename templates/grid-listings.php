@@ -1,7 +1,6 @@
 <?php
 /**
- * Custom Directorist Grid Template with Login Notice 
- * This template will be added in theme. theme/directorist/archive/grid-view.php
+ * Custom Directorist Grid Template with Login Notice
  * 
  * @author  wpWax
  * @since   6.6
@@ -15,6 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 // URL to login page
 $loginUrl = wp_login_url( get_permalink() );
+
+// Include is_plugin_active() if not already loaded
+if ( ! function_exists( 'is_plugin_active' ) ) {
+    include_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
+// Check if the Directorist List Restrictor plugin is active
+$plugin_active = is_plugin_active( 'directorist-list-restrictor/directorist-list-restrictor.php' );
 ?>
 
 <div class="directorist-archive-items directorist-archive-grid-view <?php echo esc_attr( $listings->pagination_infinite_scroll_class() ); ?>">
@@ -27,8 +34,8 @@ $loginUrl = wp_login_url( get_permalink() );
             <div class="<?php echo $listings->has_masonry() ? 'directorist-masonry' : ''; ?> <?php Helper::directorist_row(); ?>">
 
                 <?php 
-                // Restrict listing type 57
-                if ( $listings->current_listing_type == LR_PRE_SALE_ID && !is_user_logged_in() ) : ?>
+                // Show login notice for restricted listing type if plugin is active
+                if ( $plugin_active && $listings->current_listing_type == LR_PRE_SALE_ID && ! is_user_logged_in() ) : ?>
                     
                     <div class="custom-login-notice" style="
                         border: 1px solid #e0e0e0;
@@ -44,25 +51,22 @@ $loginUrl = wp_login_url( get_permalink() );
                         <p>Por favor, <a href="<?php echo esc_url( $loginUrl ); ?>" style="color: #0073aa; font-weight: bold;">inicie sesión</a> para ver los listados de preventa.</p>
                     </div>
 
-                <?php
-                    // Optional: Stop rendering the grid for this listing type
+                    <?php
+                    // Stop rendering grid for this listing type
                     return;
                 endif;
 
+                // Render the grid view
+                $listings->render_grid_view( $listings->post_ids() ); 
                 ?>
-
-                <?php $listings->render_grid_view( $listings->post_ids() ); ?>
 
             </div>
 
             <?php
             // Pagination
             if ( $listings->show_pagination && 'numbered' === $listings->options['pagination_type'] ) {
-
                 do_action( 'directorist_before_listings_pagination' );
-
                 $listings->pagination();
-
                 do_action( 'directorist_after_listings_pagination' );
             }
             ?>
