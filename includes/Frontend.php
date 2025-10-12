@@ -15,7 +15,7 @@ class Frontend {
     }
 
     public function head() {
-    	// Helper::pri( $this->get_post_ids_by_meta( '57' ) );
+    	// Helper::pri( LR_SOLD_SALE_ID );
 
 	}
 

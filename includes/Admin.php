@@ -37,9 +37,9 @@ class Admin {
 
         // Directory type / term_taxonomy mapping
         $terms = [
-            'disable' => 58,
-            'enable'  => 57,
-            'sold'    => 59,
+            'disable' => LR_PRE_SALE_ID,
+            'enable'  => LR_FOR_SALE_ID,
+            'sold'    => LR_SOLD_SALE_ID,
         ];
 
         if ( isset( $terms[ $select_value ] ) ) {
