@@ -10,7 +10,6 @@ class Admin {
     public function init() {
         $this->add_actions([
             'save_post_at_biz_dir' => ['change_post_type', 20, 3], 
-            'wp_enqueue_scripts' => 'list_restrictor_enqueue_scripts', 
         ]);
 
     }
