@@ -13,3 +13,42 @@
 .listing-status-table tr:hover {
     background-color: #f9f9f9;
 }
+
+/* Base styling for the select dropdown */
+.status-select {
+    width: 180px;
+    padding: 8px 10px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+/* Hover state */
+.status-select:hover {
+    border-color: #007cba;
+}
+
+/* Focus (when clicked) */
+.status-select:focus {
+    border-color: #007cba;
+    box-shadow: 0 0 4px rgba(0, 124, 186, 0.4);
+    outline: none;
+}
+
+/* Active (when a value is selected) */
+.status-select.active {
+    background-color: #e6f4ff;
+    border-color: #007cba;
+    color: #111;
+    font-weight: 600;
+}
+
+/* Disabled option style */
+.status-select option:disabled {
+    color: #aaa;
+    background-color: #f5f5f5;
+}
