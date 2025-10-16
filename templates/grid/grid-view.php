@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // URL to login page
 $loginUrl = wp_login_url( get_permalink() );
 
+// Include is_plugin_active() if not already loaded
+if ( ! function_exists( 'is_plugin_active' ) ) {
+    include_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
+// Check if the Directorist List Restrictor plugin is active
+$plugin_active = is_plugin_active( 'directorist-list-restrictor/directorist-list-restrictor.php' );
 ?>
 
 <div class="directorist-archive-items directorist-archive-grid-view <?php echo esc_attr( $listings->pagination_infinite_scroll_class() ); ?>">
@@ -27,8 +34,13 @@ $loginUrl = wp_login_url( get_permalink() );
             <div class="<?php echo $listings->has_masonry() ? 'directorist-masonry' : ''; ?> <?php Helper::directorist_row(); ?>">
 
                 <?php 
+
+                 $saved_data = array_flip( get_option('listing_status_data', [] ));
+
+                 // Help::pri( $saved_data, true );
+                 // Help::pri( $listings->current_listing_type, true );
                 // Show login notice for restricted listing type if plugin is active
-                if (  $listings->current_listing_type == LR_PRE_SALE_ID && ! is_user_logged_in() ) : ?>
+                if ( $plugin_active && $listings->current_listing_type == $saved_data['pre_sale'] && ! is_user_logged_in() ) : ?>
                     
                     <div class="custom-login-notice" style="
                         border: 1px solid #e0e0e0;
