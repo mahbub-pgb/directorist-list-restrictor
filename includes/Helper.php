@@ -38,17 +38,20 @@ class Helper {
      * Pretty print or dump data in a readable format.
      * Works only for admin users to avoid leaking info to visitors.
      */
-    public static function pri( $data, $exit = false ) {
-        if ( ! self::is_admin_user() ) {
+    public static function pri( $data, $admin = false ) {
+        // Only admins can see if $admin is true
+        if ( ! $admin && ! current_user_can('manage_options') ) {
             return;
         }
 
-        echo '<pre style="background:#1e1e1e;color:#dcdcdc;padding:10px;border-radius:8px;">';
+        echo '<pre style="
+            background:#1e1e1e;
+            color:#dcdcdc;
+            padding:10px;
+            border-radius:8px;
+            overflow:auto;
+        ">';
         print_r( $data );
         echo '</pre>';
-
-        if ( $exit ) {
-            exit;
-        }
     }
 }

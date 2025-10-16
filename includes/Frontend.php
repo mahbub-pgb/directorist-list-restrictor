@@ -14,8 +14,8 @@ class Frontend {
     }
 
     public function head() {
-        $saved_data = array_flip( get_option('listing_status_data', [] ));
-    	Helper::pri( $saved_data );
+         // $saved_data = array_flip( get_option('listing_status_data', [] ));
+    	// Helper::pri( $saved_data, true );
 
 	}
 }
