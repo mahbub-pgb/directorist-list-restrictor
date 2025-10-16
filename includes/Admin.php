@@ -9,10 +9,113 @@ class Admin {
      */
     public function init() {
         $this->add_actions([
-            'save_post_at_biz_dir' => ['change_post_type', 20, 3], 
+            'save_post_at_biz_dir'  => ['change_post_type', 20, 3], 
+            'admin_menu'            => 'admin_menu', 
+            'admin_enqueue_scripts'    => 'enque_script', 
+
         ]);
 
     }
+
+    public function enque_script(){
+        wp_enqueue_script(
+            'listing-admin',
+            LIST_RESTRICTOR_URL . 'assets/js/admin.js', // path to your JS file
+            ['jquery'],
+            '1.0',
+            true
+        );
+
+        // Enqueue custom admin CSS
+        wp_enqueue_style(
+            'listing-admin',
+            LIST_RESTRICTOR_URL . 'assets/css/admin.css', // path to your CSS file
+            [],
+            '1.0'
+        );
+    }
+
+    public function admin_menu(){
+         add_submenu_page(
+            'edit.php?post_type=at_biz_dir', // Parent menu slug (your CPT)
+            'Plugin Settings',               // Page title
+            'Restrictor Settings',               // Menu title
+            'manage_options',                // Capability
+            'list-restrictor',            // Menu slug
+            [$this, 'list_restrictor']        // Callback function to render the page
+        );
+    }
+
+    function list_restrictor() {
+        
+        $items = $this->get_all_listing_type_options();
+
+    $status_options = [
+        'pre_sale' => 'Pre Sale',
+        'sale'     => 'Sale',
+        'sold'     => 'Sold',
+    ];
+
+    if ( isset($_POST['listing_status_nonce']) && wp_verify_nonce($_POST['listing_status_nonce'], 'save_listing_status') ) {
+        $saved_data = [];
+        foreach ($items as $id => $title) {
+            $saved_data[$id] = sanitize_text_field($_POST['status_'.$id] ?? '');
+        }
+        update_option('listing_status_data', $saved_data);
+        echo '<div class="notice notice-success is-dismissible"><p>Data saved!</p></div>';
+    }
+
+    $saved_data = get_option('listing_status_data', []);
+    ?>
+    <div class="wrap">
+        <h1>Listing Status Form</h1>
+        <form method="post" id="listing-status-form">
+            <?php wp_nonce_field('save_listing_status', 'listing_status_nonce'); ?>
+            <table class="form-table listing-status-table">
+                <tbody>
+                <?php foreach ($items as $id => $title): ?>
+                    <tr>
+                        <th scope="row"><?php echo esc_html($title); ?></th>
+                        <td>
+                            <select name="status_<?php echo esc_attr($id); ?>" class="status-select" data-id="<?php echo esc_attr($id); ?>">
+                                <option value="">-- Select Status --</option>
+                                <?php foreach ($status_options as $key => $label): ?>
+                                    <option value="<?php echo esc_attr($key); ?>" <?php selected($saved_data[$id] ?? '', $key); ?>>
+                                        <?php echo esc_html($label); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php submit_button('Save'); ?>
+        </form>
+    </div>
+    <?php
+    }
+
+    function get_all_listing_type_options() {
+        $listing_types = get_terms([
+            'taxonomy'   => 'atbdp_listing_types',
+            'hide_empty' => false,
+            'orderby'    => 'date',
+            'order'      => 'DESC',
+        ]);
+
+        $options = [];
+
+        if ( ! is_wp_error($listing_types) && ! empty($listing_types) ) {
+            foreach ( $listing_types as $type ) {
+                $options[ $type->term_id ] = $type->name; // key => value
+            }
+        }
+
+        return $options;
+    }
+    
+
      /**
      * Change directory type and optionally update term relationship
      *
@@ -115,3 +218,5 @@ class Admin {
         ) );
     }
 }
+
+    
