@@ -50,50 +50,50 @@ class Admin {
         
         $items = $this->get_all_listing_type_options();
 
-    $status_options = [
-        'pre_sale' => 'Pre Sale',
-        'sale'     => 'Sale',
-        'sold'     => 'Sold',
-    ];
+        $status_options = [
+            'pre_sale' => 'Pre Sale',
+            'sale'     => 'Sale',
+            'sold'     => 'Sold',
+        ];
 
-    if ( isset($_POST['listing_status_nonce']) && wp_verify_nonce($_POST['listing_status_nonce'], 'save_listing_status') ) {
-        $saved_data = [];
-        foreach ($items as $id => $title) {
-            $saved_data[$id] = sanitize_text_field($_POST['status_'.$id] ?? '');
+        if ( isset($_POST['listing_status_nonce']) && wp_verify_nonce($_POST['listing_status_nonce'], 'save_listing_status') ) {
+            $saved_data = [];
+            foreach ($items as $id => $title) {
+                $saved_data[$id] = sanitize_text_field($_POST['status_'.$id] ?? '');
+            }
+            update_option('listing_status_data', $saved_data);
+            echo '<div class="notice notice-success is-dismissible"><p>Data saved!</p></div>';
         }
-        update_option('listing_status_data', $saved_data);
-        echo '<div class="notice notice-success is-dismissible"><p>Data saved!</p></div>';
-    }
 
-    $saved_data = get_option('listing_status_data', []);
-    ?>
-    <div class="wrap">
-        <h1>Listing Status Form</h1>
-        <form method="post" id="listing-status-form">
-            <?php wp_nonce_field('save_listing_status', 'listing_status_nonce'); ?>
-            <table class="form-table listing-status-table">
-                <tbody>
-                <?php foreach ($items as $id => $title): ?>
-                    <tr>
-                        <th scope="row"><?php echo esc_html($title); ?></th>
-                        <td>
-                            <select name="status_<?php echo esc_attr($id); ?>" class="status-select" data-id="<?php echo esc_attr($id); ?>">
-                                <option value="">-- Select Status --</option>
-                                <?php foreach ($status_options as $key => $label): ?>
-                                    <option value="<?php echo esc_attr($key); ?>" <?php selected($saved_data[$id] ?? '', $key); ?>>
-                                        <?php echo esc_html($label); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <?php submit_button('Save'); ?>
-        </form>
-    </div>
-    <?php
+        $saved_data = get_option('listing_status_data', []);
+        ?>
+        <div class="wrap">
+            <h1>Listing Status Form</h1>
+            <form method="post" id="listing-status-form">
+                <?php wp_nonce_field('save_listing_status', 'listing_status_nonce'); ?>
+                <table class="form-table listing-status-table">
+                    <tbody>
+                    <?php foreach ($items as $id => $title): ?>
+                        <tr>
+                            <th scope="row"><?php echo esc_html($title); ?></th>
+                            <td>
+                                <select name="status_<?php echo esc_attr($id); ?>" class="status-select" data-id="<?php echo esc_attr($id); ?>">
+                                    <option value="">-- Select Status --</option>
+                                    <?php foreach ($status_options as $key => $label): ?>
+                                        <option value="<?php echo esc_attr($key); ?>" <?php selected($saved_data[$id] ?? '', $key); ?>>
+                                            <?php echo esc_html($label); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php submit_button('Save'); ?>
+            </form>
+        </div>
+        <?php
     }
 
     function get_all_listing_type_options() {
@@ -137,11 +137,13 @@ class Admin {
         $all_meta     = get_post_meta( $post_id );
         $select_value = isset( $all_meta['_custom-select-2'][0] ) ? $all_meta['_custom-select-2'][0] : '';
 
+         $saved_data = array_flip( get_option('listing_status_data', [] ));
+
         // Directory type / term_taxonomy mapping
         $terms = [
-            'disable' => LR_PRE_SALE_ID,
-            'enable'  => LR_FOR_SALE_ID,
-            'sold'    => LR_SOLD_SALE_ID,
+            'disable' => $saved_data['pre_sale'] ?? null, // pre_sale
+            'enable'  => $saved_data['sale'] ?? null,     // sale
+            'sold'    => $saved_data['sold'] ?? null,     // sold
         ];
 
         if ( isset( $terms[ $select_value ] ) ) {

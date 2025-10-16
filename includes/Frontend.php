@@ -14,7 +14,8 @@ class Frontend {
     }
 
     public function head() {
-    	// Helper::pri( LR_SOLD_SALE_ID );
+        $saved_data = array_flip( get_option('listing_status_data', [] ));
+    	Helper::pri( $saved_data );
 
 	}
 }
