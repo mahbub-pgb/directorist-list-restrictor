@@ -13,12 +13,13 @@ class Frontend {
         $this->add_actions([
             'wp_head'    => 'head',
             'login_init' => 'show_new_url',
+            'wp_enqueue_scripts'  => 'enqueue_scripts',
         ]);
 
         // After-login redirect
         add_filter( 'atbdp_login_redirection_page_url', [ $this, 'login_redirect_option'], 100, 2 );
     }
-
+ 
     /**
      * Optional: Output debug info in head
      */
@@ -27,6 +28,16 @@ class Frontend {
         // $saved_data = array_flip( get_option('listing_status_data', []) );
         // Helper::pri( $saved_data, true );
     }
+
+    public function enqueue_scripts() {
+	    wp_enqueue_script(
+	        'list-restrictor',
+	        LIST_RESTRICTOR_URL . 'assets/js/front.js',
+	        ['jquery'], 
+	        '1.0',
+	        true 
+	    );
+	}
 
     /**
      * Redirect users visiting wp-login.php to selected page
