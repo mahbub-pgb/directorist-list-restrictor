@@ -47,30 +47,40 @@ class Admin {
     }
 
     function list_restrictor() {
-        
         $items = $this->get_all_listing_type_options();
-
         $status_options = [
             'pre_sale' => 'Pre Sale',
             'sale'     => 'Sale',
             'sold'     => 'Sold',
         ];
 
+        // Handle form submission
         if ( isset($_POST['listing_status_nonce']) && wp_verify_nonce($_POST['listing_status_nonce'], 'save_listing_status') ) {
+
+            // Save Listing Status
             $saved_data = [];
             foreach ($items as $id => $title) {
                 $saved_data[$id] = sanitize_text_field($_POST['status_'.$id] ?? '');
             }
             update_option('listing_status_data', $saved_data);
-            echo '<div class="notice notice-success is-dismissible"><p>Data saved!</p></div>';
+
+            // Save Login Redirect Page
+            $redirect_page = intval($_POST['login_redirect_page'] ?? 0);
+            update_option('login_redirect_page', $redirect_page);
+
+            echo '<div class="notice notice-success is-dismissible"><p>Settings saved!</p></div>';
         }
 
-        $saved_data = get_option('listing_status_data', []);
+        $saved_data       = get_option('listing_status_data', []);
+        $saved_redirect   = get_option('login_redirect_page', 99939);
+        $all_pages        = get_pages();
         ?>
         <div class="wrap">
-            <h1>Listing Status Form</h1>
-            <form method="post" id="listing-status-form">
+            <h1>Listing Status & Login Redirect</h1>
+            <form method="post" id="settings-form">
                 <?php wp_nonce_field('save_listing_status', 'listing_status_nonce'); ?>
+
+                <h2>Listing Status Form</h2>
                 <table class="form-table listing-status-table">
                     <tbody>
                     <?php foreach ($items as $id => $title): ?>
@@ -90,7 +100,26 @@ class Admin {
                     <?php endforeach; ?>
                     </tbody>
                 </table>
-                <?php submit_button('Save'); ?>
+
+                <h2>Login Redirect Page</h2>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">Redirect wp-login.php to</th>
+                        <td>
+                            <select name="login_redirect_page">
+                                <option value="0">-- Select a page --</option>
+                                <?php foreach ($all_pages as $page): ?>
+                                    <option value="<?php echo esc_attr($page->ID); ?>" <?php selected($saved_redirect, $page->ID); ?>>
+                                        <?php echo esc_html($page->post_title); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="description">Users visiting wp-login.php will be redirected to this page.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <?php submit_button('Save Settings'); ?>
             </form>
         </div>
         <?php

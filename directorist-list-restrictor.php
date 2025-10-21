@@ -22,18 +22,7 @@ if ( ! defined( 'LIST_RESTRICTOR_PATH' ) ) {
     define( 'LIST_RESTRICTOR_PATH', plugin_dir_path( __FILE__ ) );
 }
 
-// Listing Type IDs
-if ( ! defined( 'LR_PRE_SALE_ID' ) ) {
-    define( 'LR_PRE_SALE_ID', '58' );
-}
 
-if ( ! defined( 'LR_FOR_SALE_ID' ) ) {
-    define( 'LR_FOR_SALE_ID', '57' );
-}
-
-if ( ! defined( 'LR_SOLD_SALE_ID' ) ) {
-    define( 'LR_SOLD_SALE_ID', '59' );
-}
 
 // Autoloader
 
