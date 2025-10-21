@@ -42,12 +42,4 @@ List Restrictor is a WordPress plugin for Directorist that allows you to:
 * Registration message customization
 * Frontend JS for Directorist UI tweaks
 
-== FAQ ==
-Q: Will this plugin work with other Directorist customizations?
-A: Yes, it only modifies login/registration messages and frontend UI tweaks.
 
-Q: Can I change the redirect pages later?
-A: Yes, update the pages in the plugin settings.
-
-== License ==
-GPLv2 or later - see https://www.gnu.org/licenses/gpl-2.0.html
