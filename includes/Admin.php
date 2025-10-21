@@ -74,16 +74,12 @@ class Admin {
             $login_redirect_page = intval( $_POST['login_redirect_page'] ?? 0 );
             update_option( 'login_redirect_page', $login_redirect_page );
 
-            // Save After Login Redirect Page
-            $after_login_redirect_page = intval( $_POST['after_login_redirect_page'] ?? 0 );
-            update_option( 'after_login_redirect_page', $after_login_redirect_page );
 
             echo '<div class="notice notice-success is-dismissible"><p>Settings saved!</p></div>';
         }
 
         $saved_data                = get_option( 'listing_status_data', [] );
         $saved_login_redirect      = get_option( 'login_redirect_page', 99939 );
-        $saved_after_login_redirect = get_option( 'after_login_redirect_page', 98882 );
         $all_pages                 = get_pages();
         ?>
         <div class="wrap">
@@ -127,24 +123,7 @@ class Admin {
                             <p class="description">Users visiting wp-login.php will be redirected to this page.</p>
                         </td>
                     </tr>
-                </table>
-
-                <h2>After Login Redirect Page</h2>
-                <table class="form-table">
-                    <tr>
-                        <th scope="row">Redirect users after login to:</th>
-                        <td>
-                            <select name="after_login_redirect_page">
-                                <?php foreach ( $all_pages as $page ) : ?>
-                                    <option value="<?php echo esc_attr( $page->ID ); ?>" <?php selected( $saved_after_login_redirect, $page->ID ); ?>>
-                                        <?php echo esc_html( $page->post_title ); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <p class="description">Select the page where users should be redirected after login.</p>
-                        </td>
-                    </tr>
-                </table>
+                </table>                
 
                 <?php submit_button( 'Save Settings' ); ?>
             </form>
