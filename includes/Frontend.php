@@ -16,7 +16,7 @@ class Frontend {
         ]);
 
         // After-login redirect
-        add_filter( 'atbdp_login_redirection_page_url', [ $this, 'custom_login_redirect_option'], 100, 2 );
+        add_filter( 'atbdp_login_redirection_page_url', [ $this, 'login_redirect_option'], 100, 2 );
     }
 
     /**
@@ -52,7 +52,7 @@ class Frontend {
      * @param WP_User  $user                  WP_User object
      * @return string
      */
-    public function custom_login_redirect_option( $link, $page_id ) {
+    public function login_redirect_option( $link, $page_id ) {
 
         // Build URL with query parameter
         $link = $link . '?directory_type=preventa';
