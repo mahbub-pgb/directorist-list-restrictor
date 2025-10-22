@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Directorist List Restrictor
  * Description: Restricts access to certain lists. Loads separate admin and frontend logic.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Mahbub
  * Author URI: https://techwithmahbub.com/
  * Author Email: mahbub.progressivebyte@gmail.com
