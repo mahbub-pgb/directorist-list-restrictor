@@ -40,7 +40,7 @@ class Frontend {
             'list-restrictor',
             LIST_RESTRICTOR_URL . 'assets/js/front.js',
             ['jquery'],
-            '1.0',
+            LIST_RESTRICTOR_VERSION,
             true
         );
     }

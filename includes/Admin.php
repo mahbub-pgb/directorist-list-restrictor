@@ -23,7 +23,7 @@ class Admin {
             'listing-admin',
             LIST_RESTRICTOR_URL . 'assets/js/admin.js',
             ['jquery'],
-            '1.0',
+            LIST_RESTRICTOR_VERSION,
             true
         );
 
@@ -31,7 +31,7 @@ class Admin {
             'listing-admin',
             LIST_RESTRICTOR_URL . 'assets/css/admin.css',
             [],
-            '1.0'
+            LIST_RESTRICTOR_VERSION
         );
     }
 

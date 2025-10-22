@@ -8,6 +8,10 @@ jQuery(document).ready(function($) {
         $(this).text('Cerrar Sesión');
     });
 
+    $('.directorist-single-info__label__text').each(function() {
+        this.style.setProperty('min-width', '0', 'important');
+    });
+
     // $('.directorist-alert-warning').each(function() {
     //     // Replace only the first text node (the warning message)
     //     $(this).contents().filter(function() {

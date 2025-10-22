@@ -21,7 +21,9 @@ if ( ! defined( 'LIST_RESTRICTOR_URL' ) ) {
 if ( ! defined( 'LIST_RESTRICTOR_PATH' ) ) {
     define( 'LIST_RESTRICTOR_PATH', plugin_dir_path( __FILE__ ) );
 }
-
+if ( ! defined( 'LIST_RESTRICTOR_VERSION' ) ) {
+    define( 'LIST_RESTRICTOR_VERSION', '1.0.1' );
+}
 
 
 // Autoloader
