@@ -27,25 +27,7 @@ class Frontend {
      * Optional: Output debug info in head
      */
     public function head() {
-        $posts = get_posts([
-            'post_type'      => 'at_biz_dir',
-            'posts_per_page' => -1,
-            'post_status'    => 'publish',
-        ]);
-
-        foreach ( $posts as $post ) {
-            $terms = wp_get_post_terms( $post->ID, 'atbdp_listing_types' );
-
-            echo '<h3>' . esc_html( $post->post_title ) . '</h3>';
-
-            if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-                foreach ( $terms as $term ) {
-                    echo '<p>Term: ' . esc_html( $term->name ) . ' (ID: ' . $term->term_id . ')</p>';
-                }
-            } else {
-                echo '<p>No term assigned.</p>';
-            }
-        }
+        
 
 
 
