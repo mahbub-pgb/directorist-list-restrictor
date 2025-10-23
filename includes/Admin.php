@@ -163,87 +163,37 @@ class Admin {
      * @param bool    $update  Whether this is an update
      */
     public function change_post_type( $post_id, $post, $update ) {
+        // Security checks
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
         if ( ! current_user_can( 'edit_post', $post_id ) ) return;
         if ( get_post_type( $post_id ) !== 'at_biz_dir' ) return;
 
+        // Get custom field value
         $all_meta     = get_post_meta( $post_id );
         $select_value = $all_meta['_custom-select-2'][0] ?? '';
 
+        // Get saved mapping from settings
         $saved_data = array_flip( get_option( 'listing_status_data', [] ) );
 
+        // Map selection value to term ID
         $terms = [
             'disable' => $saved_data['pre_sale'] ?? null,
             'enable'  => $saved_data['sale'] ?? null,
             'sold'    => $saved_data['sold'] ?? null,
         ];
 
-        if ( isset( $terms[ $select_value ] ) ) {
+        // If valid mapping found
+        if ( isset( $terms[ $select_value ] ) && ! empty( $terms[ $select_value ] ) ) {
             $term_id = intval( $terms[ $select_value ] );
+
+            // Save meta for reference
             update_post_meta( $post_id, '_directory_type', $term_id );
-            $this->update_post_term_taxonomy( $post_id, $term_id );
+
+            // ✅ Update taxonomy term (this replaces existing terms for that taxonomy)
+            wp_set_post_terms( $post_id, [ $term_id ], 'atbdp_listing_types' );
         }
     }
 
-    /**
-     * Update a post's term_taxonomy_id in wp_term_relationships
-     *
-     * @param int $post_id
-     * @param int $new_term_taxonomy_id
-     * @return int|false
-     */
-    private function update_post_term_taxonomy( $post_id, $new_term_taxonomy_id ) {
-        global $wpdb;
 
-        $post_id = intval( $post_id );
-        $new_term_taxonomy_id = intval( $new_term_taxonomy_id );
 
-        if ( ! $post_id || ! $new_term_taxonomy_id ) {
-            return false;
-        }
-
-        $existing = $wpdb->get_var( $wpdb->prepare(
-            "SELECT object_id FROM {$wpdb->term_relationships} WHERE object_id = %d",
-            $post_id
-        ) );
-
-        if ( $existing ) {
-            $updated = $wpdb->update(
-                $wpdb->term_relationships,
-                ['term_taxonomy_id' => $new_term_taxonomy_id],
-                ['object_id' => $post_id],
-                ['%d'],
-                ['%d']
-            );
-        } else {
-            $updated = $wpdb->insert(
-                $wpdb->term_relationships,
-                [
-                    'object_id'        => $post_id,
-                    'term_taxonomy_id' => $new_term_taxonomy_id,
-                    'term_order'       => 0,
-                ],
-                ['%d','%d','%d']
-            );
-        }
-
-        clean_object_term_cache( $post_id, $this->get_taxonomy_by_term_taxonomy_id( $new_term_taxonomy_id ) );
-
-        return $updated;
-    }
-
-    /**
-     * Helper: Get taxonomy by term_taxonomy_id
-     *
-     * @param int $term_taxonomy_id
-     * @return string|null
-     */
-    private function get_taxonomy_by_term_taxonomy_id( $term_taxonomy_id ) {
-        global $wpdb;
-
-        return $wpdb->get_var( $wpdb->prepare(
-            "SELECT taxonomy FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id = %d",
-            intval( $term_taxonomy_id )
-        ) );
-    }
 }
