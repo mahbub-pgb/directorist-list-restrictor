@@ -12,7 +12,7 @@ class Frontend {
     public function init() {
         $this->add_actions([
             'wp_head'            => 'head',
-            'login_init'         => 'show_new_url',
+            // 'login_init'         => 'show_new_url',
             'wp_enqueue_scripts' => 'enqueue_scripts',
         ]);
 
@@ -27,10 +27,6 @@ class Frontend {
      * Optional: Output debug info in head
      */
     public function head() {
-        
-
-
-
     }
 
     /**
