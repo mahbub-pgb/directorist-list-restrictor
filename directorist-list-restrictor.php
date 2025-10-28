@@ -8,6 +8,11 @@
  * Author Email: mahbub.progressivebyte@gmail.com
  */
 
+/*
+newscand
+dkf2#^mbowrj61vqL8tx=f/[7
+*/
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
